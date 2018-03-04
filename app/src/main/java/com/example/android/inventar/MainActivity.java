@@ -15,9 +15,12 @@ import android.view.View;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -49,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.inventar.fileprovider",
+                        "com.mydomain.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-                uploadPicture(photoFile);
+                uploadPicture(photoURI);
             }
         }
     }
@@ -74,16 +77,37 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
-    public void uploadPicture(File photoFile){
-        StorageReference picRef = mStorageRef.child("images/pic.jpg");
+    public void uploadPicture(Uri photoURI){
+        StorageReference picRef = mStorageRef.child("images/");
 
-        Uri imageUri = Uri.fromFile(photoFile);
-
-        if(imageUri != null){
-            System.out.println("Laddar upp bild...");
-            final StorageReference imageRef = mStorageRef.child("images").child(imageUri.getLastPathSegment());
-            imageRef.putFile(imageUri);
-
+        InputStream iStream = null;
+        try {
+            iStream = getContentResolver().openInputStream(photoURI);
+            byte[] inputData = getBytes(iStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        /*
+        if(photoFile != null){
+            System.out.println("Laddar upp bild...");
+            final StorageReference imageRef = mStorageRef.child("images").child(photoFile.getLastPathSegment());
+            imageRef.putFile(photoFile);
+
+        }*/
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 }
