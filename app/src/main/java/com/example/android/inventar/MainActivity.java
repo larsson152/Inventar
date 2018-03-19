@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private File pictureFile;
     private String currentFileName;
+    public static final String EXTRA_MESSAGE = "com.example.myfirstapp.FILEPATH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                         // Get a URL to the uploaded content
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         updateMetadata();
+                        startInspect();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -105,5 +107,12 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-    };
+    }
+
+    public void startInspect(){
+        Intent inspectIntent = new Intent(this, InspectActivity.class);
+        Uri inspectUri = Uri.fromFile(pictureFile);
+        inspectIntent.putExtra("uri", inspectUri);
+        startActivity(inspectIntent);
+    }
 }

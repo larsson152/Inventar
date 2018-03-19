@@ -6,4 +6,9 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.inventar.InspectActivity">
 
+    <ImageView
+        android:id="@+id/inspectImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@color/common_google_signin_btn_text_dark_focused" />
 </android.support.constraint.ConstraintLayout>
